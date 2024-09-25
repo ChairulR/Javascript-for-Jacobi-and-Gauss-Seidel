@@ -1,0 +1,54 @@
+function gaussSeidel(A, b, maxIterations = 100, tolerance = 1e-4) {
+    const n = A.length;
+    const x = new Array(n).fill(0); 
+
+    console.log('Gauss-Seidel Iterations\n=======================');
+
+    for (let iteration = 0; iteration < maxIterations; iteration++) {
+        let maxError = 0;
+        let percentageErrors = new Array(n).fill(0); 
+
+        for (let i = 0; i < n; i++) {
+            let sum = 0;
+
+            for (let j = 0; j < n; j++) {
+                if (j !== i) {
+                    sum += A[i][j] * x[j]; 
+                }
+            }
+
+            const newX = (b[i] - sum) / A[i][i];
+            const error = Math.abs(newX - x[i]);
+
+            percentageErrors[i] = (Math.abs(error / (newX || 1)) * 100); 
+            
+            maxError = Math.max(maxError, error);
+            x[i] = newX; 
+        }
+
+        console.log(`Iteration ${iteration + 1}:`);
+        console.log(`  x = [${x.map(val => val.toFixed(6)).join(', ')}]`); 
+        console.log(`  Percentage Errors = [${percentageErrors.map(val => val.toFixed(2) + '%').join(', ')}]`); 
+
+        if (maxError < tolerance) {
+            console.log(`Converged after ${iteration + 1} iterations.\n`);
+            return x;
+        }
+    }
+
+    throw new Error("Gauss-Seidel method did not converge within the specified number of iterations.");
+}
+
+const A = [
+    [x1, y1, z1],
+    [x2, y2, z2],
+    [x3, y3, z3]
+];
+
+const b = [L1, L2, L3];
+try {
+    const solution = gaussSeidel(A, b);
+    console.log("Final Solution:", solution.map(val => val.toFixed(6)).join(', '));
+} catch (error) {
+    console.error("Error:", error.message);
+}
